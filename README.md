@@ -1,2 +1,140 @@
 # DockerChatApp
-This repository is created to get practical understanding on how Docker containerize and isolate services with its own configuration such as volumes to persist data and networking to create communication between services.
+
+A real-time chat application built with **Django Channels** (for WebSocket support), **React** (frontend), and **Sqlite** (database), fully containerized using **Docker** and **Docker Compose**.
+
+This project demonstrates practical Docker usage in a multi-tier application:
+- Containerizing separate services (backend, frontend)
+- Inter-service communication via Docker networks
+- Data persistence with volumes
+- Environment variable management
+- Multi-stage builds for efficient images
+
+Perfect for learning how to deploy consistent, isolated environments across development and production.
+
+## Tech Stack
+
+- **Backend**: Django (Python) + Django Channels + Daphne (ASGI server)
+- **Realtime**: WebSockets via Django Channels
+- **Frontend**: React (Create React App)
+- **Database**: Sqlite
+- **Containerization**: Docker + Docker Compose
+- **Optional (for production scaling)**: Redis (as Channels layer backend)
+
+## Project Structure
+
+```
+DockerChatApp/
+├── backend/                  # Django project
+│   ├── chatapp/              # Main project (settings, urls, asgi.py)
+│   ├── chat/                 # Chat app (models, consumers, routing)
+│   ├── manage.py
+│   └── requirements.txt
+├── frontend/                 # React application
+│   ├── src/
+│   ├── public/
+│   └── package.json
+├── compose.yml        # Orchestrates services
+├── Dockerfile.backend        # Builds Django image
+├── Dockerfile.frontend       # Multi-stage build for React + Nginx
+└── README.md                 
+```
+
+## Features
+
+- Real-time messaging using WebSockets
+- Multiple chat rooms
+- Persistent messages stored in Sqlite
+- Responsive React frontend
+- Fully isolated services running in Docker containers
+- Easy local development setup
+
+## Prerequisites
+
+- [Docker](https://www.docker.com/get-started) installed (Docker Desktop recommended)
+- Git
+
+## Quick Start
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/ABIDEGEFE/DockerChatApp.git
+   cd DockerChatApp
+   ```
+
+2. **(Optional) Create a .env file** in the root directory for custom configuration:
+   If you are using postgres:  
+   ```env
+   POSTGRES_DB=chatdb
+   POSTGRES_USER=chatuser
+   POSTGRES_PASSWORD=chatpass
+   ```
+
+4. **Build and run the containers**
+   ```bash
+   docker-compose up -d --build
+   ```
+
+5. **Run Django migrations**
+   ```bash
+   docker-compose exec backend python manage.py makemigrations
+   docker-compose exec backend python manage.py migrate
+   ```
+
+6. **Create a superuser (optional, for admin access)**
+   ```bash
+   docker-compose exec backend python manage.py createsuperuser
+   ```
+
+7. **Access the application**
+   - Frontend (React): http://localhost:5173
+   - Django backend: http://localhost:8000
+   - Django Admin: http://localhost:8000/admin
+
+8. **Stop the application**
+   ```bash
+   docker-compose down
+   ```
+
+   To remove volumes (reset database):
+   ```bash
+   docker-compose down -v
+   ```
+
+## Development Workflow
+
+- **Backend changes**: Edit files in `./backend/`. The container will reflect changes if you mount volumes (add volumes in docker-compose for hot reload).
+- **Frontend changes**: Edit in `./frontend/`. Rebuild the image with `docker-compose up --build frontend`.
+- **Logs**: `docker-compose logs -f`
+- **Shell access**:
+  - Backend: `docker-compose exec backend bash`
+  - frontend: `docker-compose exec frontend bash`
+
+## How the Chat Works
+
+1. Users visit the React frontend.
+2. Join or create a group chat.
+3. Frontend connects to WebSocket endpoint (e.g., `ws://localhost:8000/ws/chat/<group_name>/`).
+4. Messages are broadcast in real-time via Django Channels consumers using redis as channel layer.
+5. Messages are saved to Sqlite for persistence.
+
+## Production Considerations
+
+- Use Redis as the channel layer backend for horizontal scaling.
+- Serve frontend via Nginx (already in Dockerfile.frontend).
+- Use environment variables and secrets management.
+
+## Troubleshooting
+
+- **Database connection issues**: Ensure `db` service is healthy (`docker-compose ps`).
+- **WebSocket connection refused**: Check if Daphne is running and port 8000 is exposed.
+- **Migrations not applied**: Run the migrate command after container startup.
+
+## Contributing
+
+Feel free to fork and submit pull requests! Issues and suggestions are welcome.
+
+Contributor: Abinet Degefa
+email: agonaferdegefe@gmail.com
+
+---
+
