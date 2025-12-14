@@ -1,0 +1,35 @@
+# Multi-stage build for Django + Channels backend
+
+FROM python:3.12-slim AS base
+ENV PYTHONDONTWRITEBYTECODE=1 \
+	PYTHONUNBUFFERED=1 \
+	PIP_NO_CACHE_DIR=1
+
+WORKDIR /app
+
+# System deps for Pillow and build tools
+RUN apt-get update \
+	&& apt-get install -y --no-install-recommends \
+	   build-essential \
+	   libjpeg62-turbo-dev \
+	   zlib1g-dev \
+	&& rm -rf /var/lib/apt/lists/*
+
+# Install Python dependencies first for caching
+COPY backend/chatapp/requirements.txt ./requirements.txt
+RUN python -m venv /opt/venv \
+	&& /opt/venv/bin/pip install --upgrade pip \
+	&& /opt/venv/bin/pip install -r requirements.txt
+
+ENV PATH="/opt/venv/bin:$PATH"
+
+# Copy application source
+COPY backend/chatapp ./chatapp
+
+WORKDIR /app/chatapp
+
+# Expose HTTP/WebSocket port
+EXPOSE 8000
+
+# Default command runs Daphne (ASGI) for HTTP + WebSocket
+CMD ["daphne", "-b", "0.0.0.0", "-p", "8000", "chatapp.asgi:application"]

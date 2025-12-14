@@ -1,0 +1,30 @@
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    environment:
+      - DJANGO_SETTINGS_MODULE=chatapp.settings
+    depends_on:
+      - redis
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend/chatapp/db.sqlite3:/app/chatapp/db.sqlite3
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+      args:
+        VITE_API_BASE: http://localhost:8000/api
+    ports:
+      - "5173:80"
+    depends_on:
+      - backend
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
