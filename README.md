@@ -109,6 +109,27 @@ DockerChatApp/
   - Backend: `docker-compose exec backend bash`
   - frontend: `docker-compose exec frontend bash`
 
+
+  ## How Multi-Staging efficiently reduce storage consuming by just getting only neccessary dependencies and configuration to run the application?
+  - It separates build time configuration from run time configuration.
+  - Using multi stage we are able to save around 50% of the storage.
+    
+ 
+    ## Before multi-stage the image takes around 810 MB:
+
+    <img width="1174" height="342" alt="Screenshot 2025-12-15 102837" src="https://github.com/user-attachments/assets/1c485105-5b6f-43f4-8d51-51a97517a9b1" />
+
+
+    ## After multi-stage the image size reduced to 380 MB:
+
+    <img width="1319" height="311" alt="Screenshot 2025-12-15 103408" src="https://github.com/user-attachments/assets/089094cc-35d4-4d95-b78c-8d1d04efd1e5" />
+
+    --------------
+
+    
+
+
+
 ## How the Chat Works
 
 1. Users visit the React frontend.
