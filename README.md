@@ -144,6 +144,12 @@ DockerChatApp/
 - Serve frontend via Nginx (already in Dockerfile.frontend).
 - Use environment variables and secrets management.
 
+
+## Diagramatical representation  
+
+<img width="1920" height="1080" alt="Your paragraph text" src="https://github.com/user-attachments/assets/2e423e72-07c0-4ede-bcfd-b2ebdd73040a" />
+
+
 ## Troubleshooting
 
 - **Database connection issues**: Ensure `db` service is healthy (`docker-compose ps`).
